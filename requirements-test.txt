@@ -321,7 +321,7 @@ typer==0.15.2
     # via
     #   -c requirements.txt
     #   frictionless
-typing-extensions==4.13.0
+typing-extensions==4.13.1
     # via
     #   -c requirements.txt
     #   frictionless

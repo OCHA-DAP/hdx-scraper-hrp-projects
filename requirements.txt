@@ -179,7 +179,7 @@ typeguard==4.4.2
     # via inflect
 typer==0.15.2
     # via frictionless
-typing-extensions==4.13.0
+typing-extensions==4.13.1
     # via
     #   frictionless
     #   pydantic

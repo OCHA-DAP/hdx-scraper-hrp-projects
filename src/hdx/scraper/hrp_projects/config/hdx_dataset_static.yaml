@@ -1,10 +1,9 @@
-license_id: cc-by
-methodology: Other
-caveats: None
-dataset_source: Proper name of source organization
+license_id: cc-by-igo
+methodology: Registry
+dataset_source: HPC Tools
 package_creator: HDX Data Systems Team
 private: False
-maintainer: dataset maintainer HDX ID
-owner_org:  dataset organization HDX ID
-data_update_frequency: update frequency
-notes: dataset notes
+maintainer: 1a1776f4-d825-4c62-b809-e9127278763d
+owner_org: ocha-hpc-tools
+data_update_frequency: -2
+subnational: "0"

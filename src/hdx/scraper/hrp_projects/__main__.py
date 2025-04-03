@@ -12,10 +12,10 @@ from hdx.api.configuration import Configuration
 from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
 from hdx.utilities.downloader import Download
-from hdx.utilities.path import (
-    wheretostart_tempdir_batch,
-)
+from hdx.utilities.path import temp_dir_batch
 from hdx.utilities.retriever import Retrieve
+
+from hdx.scraper.hrp_projects.hrp_projects import HRPProjects
 
 logger = logging.getLogger(__name__)
 
@@ -39,13 +39,13 @@ def main(
     """
     configuration = Configuration.read()
     if not User.check_current_user_organization_access(
-        "<insert org name>", "create_dataset"
+        "ocha-hpc-tools", "create_dataset"
     ):
         raise PermissionError(
-            "API Token does not give access to <insert org title> organisation!"
+            "API Token does not give access to HPC Tools organisation!"
         )
 
-    with wheretostart_tempdir_batch(folder=_USER_AGENT_LOOKUP) as info:
+    with temp_dir_batch(folder=_USER_AGENT_LOOKUP) as info:
         temp_dir = info["folder"]
         with Download() as downloader:
             retriever = Retrieve(
@@ -56,19 +56,30 @@ def main(
                 save=save,
                 use_saved=use_saved,
             )
-            #
-            # Steps to generate dataset
-            #
-            dataset.update_from_yaml(
-                path=join(dirname(__file__), "config", "hdx_dataset_static.yaml")
-            )
-            dataset.create_in_hdx(
-                remove_additional_resources=True,
-                match_resource_order=False,
-                hxl_update=False,
-                updated_by_script=_UPDATED_BY_SCRIPT,
-                batch=info["batch"],
-            )
+            hrp_projects = HRPProjects(configuration, retriever, temp_dir)
+            countryiso3s = hrp_projects.get_data()
+            for countryiso3 in countryiso3s:
+                dataset = hrp_projects.generate_dataset(countryiso3)
+                if not dataset:
+                    continue
+                dataset.update_from_yaml(
+                    path=join(dirname(__file__), "config", "hdx_dataset_static.yaml")
+                )
+                dataset.generate_quickcharts(
+                    resource=0,
+                    path=join(
+                        dirname(__file__), "config", "hdx_resource_view_static.yaml"
+                    ),
+                )
+                dataset.create_in_hdx(
+                    remove_additional_resources=True,
+                    match_resource_order=False,
+                    hxl_update=False,
+                    updated_by_script=_UPDATED_BY_SCRIPT,
+                    batch=info["batch"],
+                )
+
+            logger.info("Finished processing!")
 
 
 if __name__ == "__main__":
