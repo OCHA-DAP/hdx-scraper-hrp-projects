@@ -11,6 +11,7 @@ from os.path import dirname, expanduser, join
 from hdx.api.configuration import Configuration
 from hdx.data.user import User
 from hdx.facades.infer_arguments import facade
+from hdx.utilities.dateparse import now_utc
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir_batch
 from hdx.utilities.retriever import Retrieve
@@ -57,7 +58,9 @@ def main(
                 use_saved=use_saved,
             )
             hrp_projects = HRPProjects(configuration, retriever, temp_dir)
-            countryiso3s = hrp_projects.get_data()
+            now = now_utc()
+            cutoff_year = now.year - 5
+            countryiso3s = hrp_projects.get_data(cutoff_year)
             for countryiso3 in countryiso3s:
                 dataset = hrp_projects.generate_dataset(countryiso3)
                 if not dataset:

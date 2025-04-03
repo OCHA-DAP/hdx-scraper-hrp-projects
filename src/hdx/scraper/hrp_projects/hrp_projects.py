@@ -25,7 +25,7 @@ class HRPProjects:
         self.plans_data_csv = {}
         self.countries_data = {}
 
-    def get_data(self) -> List[str]:
+    def get_data(self, cutoff_year) -> List[str]:
         plans_data = self._retriever.download_json(self._configuration["plans_url"])
         for plan in plans_data["data"]:
             plan_code = plan["planVersion"]["code"]
@@ -43,15 +43,10 @@ class HRPProjects:
             # skip if it's from before the cutoff year
             has_recent = False
             for year in plan["years"]:
-                if (
-                    "year" in year
-                    and int(year["year"]) >= self._configuration["cutoff_year"]
-                ):
+                if "year" in year and int(year["year"]) >= cutoff_year:
                     has_recent = True
             if not has_recent:
-                logger.info(
-                    f"Skipping {plan_code} (before {self._configuration['cutoff_year']})"
-                )
+                logger.info(f"Skipping {plan_code} (before {cutoff_year})")
                 continue
 
             # skip if it doesn't have any projects

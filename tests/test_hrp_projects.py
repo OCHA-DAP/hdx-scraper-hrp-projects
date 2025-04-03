@@ -25,7 +25,7 @@ class TestHRPProjects:
                     use_saved=True,
                 )
                 hrp_projects = HRPProjects(configuration, retriever, tempdir)
-                countryiso3s = hrp_projects.get_data()
+                countryiso3s = hrp_projects.get_data(2018)
                 assert countryiso3s == ["IRQ"]
                 dataset = hrp_projects.generate_dataset("IRQ")
                 dataset.update_from_yaml(

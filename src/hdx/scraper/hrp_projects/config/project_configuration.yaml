@@ -4,8 +4,6 @@ plans_url: "https://api.hpc.tools/v2/public/plan"
 
 api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=locations,governingEntities,targets&limit=100000"
 
-cutoff_year: 2018
-
 tags:
   - "humanitarian response plan-hrp"
   - "hxl"
