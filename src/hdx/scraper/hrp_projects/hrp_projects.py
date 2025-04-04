@@ -50,9 +50,11 @@ class HRPProjects:
                 continue
 
             # skip if it doesn't have any projects
-            project_url = self._configuration["api_pattern"].format(code=plan_code)
-            project_data = self._retriever.download_json(project_url)
-            if len(project_data["data"]["results"]) == 0:
+            project_url = self._configuration["api_pattern"].format(
+                code=plan_code, rows=500
+            )
+            project_data_json = self._retriever.download_json(project_url)
+            if len(project_data_json["data"]["results"]) == 0:
                 logger.info(f"Skipping {plan_code} (no projects)")
                 continue
 
@@ -63,9 +65,22 @@ class HRPProjects:
                 "start": plan["planVersion"].get("startDate"),
                 "end": plan["planVersion"].get("endDate"),
                 "type": plan["categories"][0].get("name"),
+                "url": self._configuration["api_pattern"].format(
+                    code=plan_code, rows=100000
+                ),
             }
             dict_of_lists_add(self.plans_data_json, iso3, plan_row)
-            for row in project_data["data"]["results"]:
+
+            # paginate through results
+            project_data = project_data_json["data"]["results"]
+            pages = project_data_json["data"]["pagination"]["pages"]
+            if pages > 1:
+                for i in range(2, pages + 1):
+                    extra_project_data = self._retriever.download_json(
+                        project_url + f"&page={i}"
+                    )
+                    project_data.extend(extra_project_data["data"]["results"])
+            for row in project_data:
                 csv_row = {
                     key: value
                     for key, value in row.items()
@@ -143,7 +158,7 @@ class HRPProjects:
             resourcedata_json = {
                 "name": f"{plan_code.lower()}-{countryiso3.lower()}-projects.json",
                 "description": f"Projects for {plan_name} ({plan_type}): original JSON, from HPC.tools",
-                "url": self._configuration["api_pattern"].format(code=plan_code),
+                "url": plan["url"],
                 "format": "json",
             }
             dataset.add_update_resource(resourcedata_json)

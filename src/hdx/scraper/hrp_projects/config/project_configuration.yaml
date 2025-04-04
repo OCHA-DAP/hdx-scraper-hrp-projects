@@ -2,7 +2,7 @@
 
 plans_url: "https://api.hpc.tools/v2/public/plan"
 
-api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=locations,governingEntities,targets&limit=100000"
+api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=locations,governingEntities,targets&limit={rows}"
 
 tags:
   - "humanitarian response plan-hrp"
