@@ -2,7 +2,7 @@
 """hrp projects scraper"""
 
 import logging
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -23,9 +23,10 @@ class HRPProjects:
         self._temp_dir = temp_dir
         self.plans_data_json = {}
         self.plans_data_csv = {}
-        self.countries_data = {}
+        self.dates = {}
+        self.update_dates = {}
 
-    def get_data(self, cutoff_year) -> List[str]:
+    def get_data(self, cutoff_year) -> None:
         plans_data = self._retriever.download_json(self._configuration["plans_url"])
         for plan in plans_data["data"]:
             plan_code = plan["planVersion"]["code"]
@@ -59,6 +60,14 @@ class HRPProjects:
                 continue
 
             # add these plans and dates
+            update_date = parse_date(plan["updatedAt"])
+            dict_of_sets_add(self.update_dates, iso3, update_date)
+
+            start_date = parse_date(plan["planVersion"].get("startDate"))
+            end_date = parse_date(plan["planVersion"].get("endDate"))
+            dict_of_sets_add(self.dates, iso3, start_date)
+            dict_of_sets_add(self.dates, iso3, end_date)
+
             plan_row = {
                 "code": plan_code,
                 "name": plan["planVersion"].get("name"),
@@ -102,12 +111,16 @@ class HRPProjects:
                     self.plans_data_csv[iso3] = {}
                 dict_of_lists_add(self.plans_data_csv[iso3], plan_code, csv_row)
 
-            start_date = parse_date(plan["planVersion"].get("startDate"))
-            end_date = parse_date(plan["planVersion"].get("endDate"))
-            dict_of_sets_add(self.countries_data, iso3, start_date)
-            dict_of_sets_add(self.countries_data, iso3, end_date)
-
-        return sorted(list(self.countries_data.keys()))
+    def check_state(self, state_dict: Dict) -> List[str]:
+        countryiso3s = []
+        for countryiso3, update_dates in self.update_dates.items():
+            update_date = max(update_dates)
+            state_date = state_dict.get(countryiso3, state_dict.get("DEFAULT"))
+            if update_date <= state_date:
+                continue
+            countryiso3s.append(countryiso3)
+            state_dict[countryiso3] = update_date
+        return sorted(countryiso3s)
 
     def generate_dataset(self, countryiso3: str) -> Optional[Dataset]:
         country_name = Country.get_country_name_from_iso3(countryiso3)
@@ -120,8 +133,8 @@ class HRPProjects:
                 "title": f"{country_name}: Response Plan projects",
             }
         )
-        start_date = min(self.countries_data[countryiso3])
-        end_date = max(self.countries_data[countryiso3])
+        start_date = min(self.dates[countryiso3])
+        end_date = max(self.dates[countryiso3])
         dataset.set_time_period(start_date, end_date)
         dataset.add_tags(self._configuration["tags"])
         dataset.add_country_location(countryiso3)

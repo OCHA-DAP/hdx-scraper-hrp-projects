@@ -1,6 +1,7 @@
 from os.path import join
 
 from hdx.utilities.compare import assert_files_same
+from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 from hdx.utilities.retriever import Retrieve
@@ -25,7 +26,10 @@ class TestHRPProjects:
                     use_saved=True,
                 )
                 hrp_projects = HRPProjects(configuration, retriever, tempdir)
-                countryiso3s = hrp_projects.get_data(2018)
+                hrp_projects.get_data(2018)
+                countryiso3s = hrp_projects.check_state(
+                    {"DEFAULT": parse_date("2017-01-01")}
+                )
                 assert countryiso3s == ["IRQ"]
                 dataset = hrp_projects.generate_dataset("IRQ")
                 dataset.update_from_yaml(
