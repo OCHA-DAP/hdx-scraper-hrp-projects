@@ -70,7 +70,7 @@ class TestHRPProjects:
                     "to Iraq. See _Caveats_ under the _Additional information_ tab.",
                     "license_id": "cc-by-igo",
                     "methodology": "Registry",
-                    "dataset_source": "HPC Tools",
+                    "dataset_source": "Humanitarian partners",
                     "package_creator": "HDX Data Systems Team",
                     "private": False,
                     "maintainer": "1a1776f4-d825-4c62-b809-e9127278763d",
