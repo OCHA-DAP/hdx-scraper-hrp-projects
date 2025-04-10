@@ -73,7 +73,6 @@ class HRPProjects:
                 "name": plan["planVersion"].get("name"),
                 "start": plan["planVersion"].get("startDate"),
                 "end": plan["planVersion"].get("endDate"),
-                "type": plan["categories"][0].get("name"),
                 "url": self._configuration["api_pattern"].format(
                     code=plan_code, rows=100000
                 ),
@@ -152,11 +151,10 @@ class HRPProjects:
         for plan in sorted(plans, key=lambda plan: plan["start"], reverse=True):
             plan_code = plan["code"]
             plan_name = plan["name"]
-            plan_type = plan["type"]
             data_csv = self.plans_data_csv[countryiso3][plan_code]
             resourcedata_csv = {
                 "name": f"{plan_code.lower()}-{countryiso3.lower()}-projects.csv",
-                "description": f"Projects for {plan_name} ({plan_type}): simplified CSV data, with HXL hashtags.",
+                "description": f"Projects for {plan_name}: simplified CSV data, with HXL hashtags.",
             }
             dataset.generate_resource_from_iterable(
                 headers,
@@ -170,7 +168,7 @@ class HRPProjects:
 
             resourcedata_json = {
                 "name": f"{plan_code.lower()}-{countryiso3.lower()}-projects.json",
-                "description": f"Projects for {plan_name} ({plan_type}): original JSON, from HPC.tools",
+                "description": f"Projects for {plan_name}: original JSON, from HPC.tools",
                 "url": plan["url"],
                 "format": "json",
             }

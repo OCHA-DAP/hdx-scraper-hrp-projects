@@ -85,7 +85,7 @@ class TestHRPProjects:
                 assert resources[0] == {
                     "name": "rsyr22-irq-projects.csv",
                     "description": "Projects for Syrian Arab Republic Regional Refugee and "
-                    "Resilience Plan (3RP) 2022 (sector): simplified CSV data, with HXL hashtags.",
+                    "Resilience Plan (3RP) 2022: simplified CSV data, with HXL hashtags.",
                     "format": "csv",
                     "resource_type": "file.upload",
                     "url_type": "upload",
@@ -94,7 +94,7 @@ class TestHRPProjects:
                 assert resources[1] == {
                     "name": "rsyr22-irq-projects.json",
                     "description": "Projects for Syrian Arab Republic Regional Refugee and "
-                    "Resilience Plan (3RP) 2022 (sector): original JSON, from HPC.tools",
+                    "Resilience Plan (3RP) 2022: original JSON, from HPC.tools",
                     "url": "https://api.hpc.tools/v2/public/project/search?planCodes=RSYR22&"
                     "excludeFields=locations,governingEntities,targets&limit=100000",
                     "format": "json",
