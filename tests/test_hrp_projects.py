@@ -2,7 +2,6 @@ from os.path import join
 
 from hdx.api.utilities.hdx_error_handler import HDXErrorHandler
 from hdx.utilities.compare import assert_files_same
-from hdx.utilities.dateparse import parse_date
 from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 from hdx.utilities.retriever import Retrieve
@@ -30,13 +29,10 @@ class TestHRPProjects:
                     hrp_projects = HRPProjects(
                         configuration, retriever, error_handler, tempdir
                     )
-                    hrp_projects.get_data(2022, 2018)
+                    countryiso3s = hrp_projects.get_data(2022, 2018)
+                    assert countryiso3s == ["EGY", "IRQ", "JOR", "LBN", "TUR"]
                     edits = hrp_projects.check_hrp_gho(flag=False)
                     assert len(edits) == 4
-                    countryiso3s = hrp_projects.check_state(
-                        {"DEFAULT": parse_date("2017-01-01")}
-                    )
-                    assert countryiso3s == ["EGY", "IRQ", "JOR", "LBN", "TUR"]
                     dataset = hrp_projects.generate_dataset("IRQ")
                     dataset.update_from_yaml(
                         path=join(config_dir, "hdx_dataset_static.yaml")
