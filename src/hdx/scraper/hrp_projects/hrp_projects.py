@@ -2,7 +2,7 @@
 """hrp projects scraper"""
 
 import logging
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from hdx.api.configuration import Configuration
 from hdx.api.utilities.hdx_error_handler import HDXErrorHandler
@@ -30,11 +30,10 @@ class HRPProjects:
         self.plans_data_json = {}
         self.plans_data_csv = {}
         self.dates = {}
-        self.update_dates = {}
         self.hrp_countries = []
         self.gho_countries = []
 
-    def get_data(self, current_year: int, cutoff_year: int) -> None:
+    def get_data(self, current_year: int, cutoff_year: int) -> List[str]:
         plans_data = self._retriever.download_json(self._configuration["plans_url"])
         for plan in plans_data["data"]:
             plan_code = plan["planVersion"]["code"]
@@ -81,7 +80,6 @@ class HRPProjects:
                 continue
 
             # add these plans and dates
-            update_date = parse_date(plan["updatedAt"])
             start_date = parse_date(plan["planVersion"].get("startDate"))
             end_date = parse_date(plan["planVersion"].get("endDate"))
 
@@ -95,7 +93,6 @@ class HRPProjects:
                 ),
             }
             for iso3 in iso3s:
-                dict_of_sets_add(self.update_dates, iso3, update_date)
                 dict_of_sets_add(self.dates, iso3, start_date)
                 dict_of_sets_add(self.dates, iso3, end_date)
                 dict_of_lists_add(self.plans_data_json, iso3, plan_row)
@@ -140,6 +137,8 @@ class HRPProjects:
                         self.plans_data_csv[iso3] = {}
                     dict_of_lists_add(self.plans_data_csv[iso3], plan_code, csv_row)
 
+        return sorted(list(self.plans_data_json.keys()))
+
     def check_hrp_gho(self, flag=True) -> List:
         country_data = Country.countriesdata()["countries"]
         edits = []
@@ -169,17 +168,6 @@ class HRPProjects:
                         f"Remove {', '.join(remove_countries)} from country list",
                     )
         return edits
-
-    def check_state(self, state_dict: Dict) -> List[str]:
-        countryiso3s = []
-        for countryiso3, update_dates in self.update_dates.items():
-            update_date = max(update_dates)
-            state_date = state_dict.get(countryiso3, state_dict.get("DEFAULT"))
-            if update_date <= state_date:
-                continue
-            countryiso3s.append(countryiso3)
-            state_dict[countryiso3] = update_date
-        return sorted(countryiso3s)
 
     def generate_dataset(self, countryiso3: str) -> Optional[Dataset]:
         country_name = Country.get_country_name_from_iso3(countryiso3)
