@@ -4,7 +4,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 This script downloads data from HPC.tools and creates HDX datasets for Response Plan project lists for plans that are effective five or fewer years ago.
-It also checks the current HRP and GHO country list for updates.
+It also checks the current HRP and GHO country list for updates. If it finds changes that need to be made, it will fail and output messages detailing those changes, which then need to be reviewed and made to the Countries and Territories Taxonomy spreadsheet.
 
 ## Development
 
