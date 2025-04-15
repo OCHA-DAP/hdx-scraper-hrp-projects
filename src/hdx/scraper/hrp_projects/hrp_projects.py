@@ -115,6 +115,14 @@ class HRPProjects:
                     for key, value in row.items()
                     if key in self._configuration["hxl_tags"]
                 }
+                if row["locations"] is not None:
+                    csv_row["locations"] = ", ".join(
+                        [
+                            country["iso3"]
+                            for country in row["locations"]
+                            if country["iso3"]
+                        ]
+                    )
                 if row["globalClusters"] is not None:
                     csv_row["globalClusters"] = ", ".join(
                         [cluster["name"] for cluster in row["globalClusters"]]

@@ -2,7 +2,7 @@
 
 plans_url: "https://api.hpc.tools/v2/public/plan"
 
-api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=locations,governingEntities,targets&limit={rows}"
+api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=governingEntities,targets&limit={rows}"
 
 hrp_subtitles:
   - "besoins humanitaires et plan de réponse"
@@ -26,6 +26,7 @@ hxl_tags:
   startDate: "#date+start"
   endDate: "#date+end"
   globalClusters: "#sector+cluster+global+name"
+  locations: "#country+code"
   organizations: "#org+prog+name"
   plans: "#response+plan+name"
   Response plan code: "#response+plan+code"

@@ -102,7 +102,7 @@ class TestHRPProjects:
                         "description": "Projects for Syrian Arab Republic Regional Refugee and "
                         "Resilience Plan (3RP) 2022: original JSON, from HPC.tools",
                         "url": "https://api.hpc.tools/v2/public/project/search?planCodes=RSYR22&"
-                        "excludeFields=locations,governingEntities,targets&limit=100000",
+                        "excludeFields=governingEntities,targets&limit=100000",
                         "format": "json",
                         "resource_type": "api",
                         "url_type": "api",
