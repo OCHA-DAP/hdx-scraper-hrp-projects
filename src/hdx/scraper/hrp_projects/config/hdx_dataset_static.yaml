@@ -5,5 +5,5 @@ package_creator: HDX Data Systems Team
 private: False
 maintainer: 1a1776f4-d825-4c62-b809-e9127278763d
 owner_org: ocha-hpc-tools
-data_update_frequency: -2
+data_update_frequency: 7
 subnational: "0"
