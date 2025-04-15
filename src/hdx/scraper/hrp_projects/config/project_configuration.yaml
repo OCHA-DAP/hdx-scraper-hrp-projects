@@ -4,6 +4,14 @@ plans_url: "https://api.hpc.tools/v2/public/plan"
 
 api_pattern: "https://api.hpc.tools/v2/public/project/search?planCodes={code}&excludeFields=locations,governingEntities,targets&limit={rows}"
 
+hrp_subtitles:
+  - "besoins humanitaires et plan de réponse"
+  - "humanitarian needs and response plan"
+  - "humanitarian response plan"
+  - "necesidades humanitarias y plan de respuesta"
+  - "original humanitarian needs and response plan"
+  - "plan de respuesta humanitaria"
+
 tags:
   - "humanitarian response plan-hrp"
   - "hxl"

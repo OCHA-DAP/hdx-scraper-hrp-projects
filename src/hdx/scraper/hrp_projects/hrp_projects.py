@@ -5,6 +5,7 @@ import logging
 from typing import Dict, List, Optional
 
 from hdx.api.configuration import Configuration
+from hdx.api.utilities.hdx_error_handler import HDXErrorHandler
 from hdx.data.dataset import Dataset
 from hdx.location.country import Country
 from hdx.utilities.dateparse import parse_date
@@ -16,39 +17,60 @@ logger = logging.getLogger(__name__)
 
 class HRPProjects:
     def __init__(
-        self, configuration: Configuration, retriever: Retrieve, temp_dir: str
+        self,
+        configuration: Configuration,
+        retriever: Retrieve,
+        error_handler: HDXErrorHandler,
+        temp_dir: str,
     ):
         self._configuration = configuration
         self._retriever = retriever
+        self._error_handler = error_handler
         self._temp_dir = temp_dir
         self.plans_data_json = {}
         self.plans_data_csv = {}
         self.dates = {}
         self.update_dates = {}
+        self.hrp_countries = []
+        self.gho_countries = []
 
-    def get_data(self, cutoff_year) -> None:
+    def get_data(self, current_year: int, cutoff_year: int) -> None:
         plans_data = self._retriever.download_json(self._configuration["plans_url"])
         for plan in plans_data["data"]:
             plan_code = plan["planVersion"]["code"]
 
             # skip if there's no country ISO3
-            iso3 = None
+            iso3s = []
             for location in plan["locations"]:
                 if location.get("adminLevel") == 0:
                     iso3 = location.get("iso3")
-                    break
-            if iso3 is None:
+                    if iso3:
+                        iso3s.append(iso3)
+            if len(iso3s) == 0:
                 logger.info(f"Skipping {plan_code} (no country code)")
                 continue
 
             # skip if it's from before the cutoff year
-            has_recent = False
+            plan_year = 0
             for year in plan["years"]:
-                if "year" in year and int(year["year"]) >= cutoff_year:
-                    has_recent = True
-            if not has_recent:
+                if "year" in year and int(year["year"]) >= plan_year:
+                    plan_year = int(year["year"])
+            if plan_year < cutoff_year:
                 logger.info(f"Skipping {plan_code} (before {cutoff_year})")
                 continue
+
+            # update HRP and GHO lists
+            if plan_year == current_year:
+                logger.warning(f"{plan_code}: {plan['planVersion']['subtitle']}")
+                if (
+                    plan["planVersion"]["subtitle"].lower()
+                    in self._configuration["hrp_subtitles"]
+                ):
+                    for iso3 in iso3s:
+                        self.hrp_countries.append(iso3)
+                if plan["planVersion"]["isPartOfGHO"]:
+                    for iso3 in iso3s:
+                        self.gho_countries.append(iso3)
 
             # skip if it doesn't have any projects
             project_url = self._configuration["api_pattern"].format(
@@ -61,12 +83,8 @@ class HRPProjects:
 
             # add these plans and dates
             update_date = parse_date(plan["updatedAt"])
-            dict_of_sets_add(self.update_dates, iso3, update_date)
-
             start_date = parse_date(plan["planVersion"].get("startDate"))
             end_date = parse_date(plan["planVersion"].get("endDate"))
-            dict_of_sets_add(self.dates, iso3, start_date)
-            dict_of_sets_add(self.dates, iso3, end_date)
 
             plan_row = {
                 "code": plan_code,
@@ -77,7 +95,11 @@ class HRPProjects:
                     code=plan_code, rows=100000
                 ),
             }
-            dict_of_lists_add(self.plans_data_json, iso3, plan_row)
+            for iso3 in iso3s:
+                dict_of_sets_add(self.update_dates, iso3, update_date)
+                dict_of_sets_add(self.dates, iso3, start_date)
+                dict_of_sets_add(self.dates, iso3, end_date)
+                dict_of_lists_add(self.plans_data_json, iso3, plan_row)
 
             # paginate through results
             project_data = project_data_json["data"]["results"]
@@ -106,9 +128,40 @@ class HRPProjects:
                     plan_names = list(set([plan["name"] for plan in row["plans"]]))
                     csv_row["plans"] = ", ".join(plan_names)
                 csv_row["Response plan code"] = plan_code
-                if iso3 not in self.plans_data_csv:
-                    self.plans_data_csv[iso3] = {}
-                dict_of_lists_add(self.plans_data_csv[iso3], plan_code, csv_row)
+                for iso3 in iso3s:
+                    if iso3 not in self.plans_data_csv:
+                        self.plans_data_csv[iso3] = {}
+                    dict_of_lists_add(self.plans_data_csv[iso3], plan_code, csv_row)
+
+    def check_hrp_gho(self, flag=True) -> List:
+        country_data = Country.countriesdata()["countries"]
+        edits = []
+        for data_type in ["GHO", "HRP"]:
+            old_list = [
+                key
+                for key in country_data
+                if country_data[key][f"#indicator+bool+{data_type.lower()}"] == "Y"
+            ]
+            new_list = self.gho_countries if data_type == "GHO" else self.hrp_countries
+            new_list = list(set(new_list))
+            if sorted(old_list) != sorted(new_list):
+                add_countries = [c for c in new_list if c not in old_list]
+                edits.append(add_countries)
+                remove_countries = [c for c in old_list if c not in new_list]
+                edits.append(remove_countries)
+                if flag and len(add_countries) > 0:
+                    self._error_handler.add_message(
+                        "HRP Projects",
+                        data_type,
+                        f"Add {', '.join(add_countries)} to country list",
+                    )
+                if flag and len(remove_countries) > 0:
+                    self._error_handler.add_message(
+                        "HRP Projects",
+                        data_type,
+                        f"Remove {', '.join(remove_countries)} from country list",
+                    )
+        return edits
 
     def check_state(self, state_dict: Dict) -> List[str]:
         countryiso3s = []
