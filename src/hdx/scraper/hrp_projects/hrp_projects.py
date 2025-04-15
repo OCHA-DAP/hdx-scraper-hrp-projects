@@ -61,7 +61,6 @@ class HRPProjects:
 
             # update HRP and GHO lists
             if plan_year == current_year:
-                logger.warning(f"{plan_code}: {plan['planVersion']['subtitle']}")
                 if (
                     plan["planVersion"]["subtitle"].lower()
                     in self._configuration["hrp_subtitles"]
