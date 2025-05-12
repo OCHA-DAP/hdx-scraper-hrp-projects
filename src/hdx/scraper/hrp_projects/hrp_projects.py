@@ -139,16 +139,23 @@ class HRPProjects:
 
         return sorted(list(self.plans_data_json.keys()))
 
-    def check_hrp_gho(self, flag=True) -> List:
+    def check_hrp_gho(self, current_year: int, flag=True) -> List:
         country_data = Country.countriesdata()["countries"]
         edits = []
         for data_type in ["GHO", "HRP"]:
+            exceptions = self._configuration["hrp_gho_exceptions"].get(
+                f"{data_type}_{current_year}", {}
+            )
+            add_countries = exceptions.get("add", [])
+            remove_countries = exceptions.get("remove", [])
             old_list = [
                 key
                 for key in country_data
                 if country_data[key][f"#indicator+bool+{data_type.lower()}"] == "Y"
             ]
             new_list = self.gho_countries if data_type == "GHO" else self.hrp_countries
+            new_list = new_list + add_countries
+            new_list = [iso for iso in new_list if iso not in remove_countries]
             new_list = list(set(new_list))
             if sorted(old_list) != sorted(new_list):
                 add_countries = [c for c in new_list if c not in old_list]

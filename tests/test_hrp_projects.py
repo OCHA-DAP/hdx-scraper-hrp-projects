@@ -31,7 +31,7 @@ class TestHRPProjects:
                     )
                     countryiso3s = hrp_projects.get_data(2022, 2018)
                     assert countryiso3s == ["EGY", "IRQ", "JOR", "LBN", "TUR"]
-                    edits = hrp_projects.check_hrp_gho(flag=False)
+                    edits = hrp_projects.check_hrp_gho(2022, flag=False)
                     assert len(edits) == 4
                     dataset = hrp_projects.generate_dataset("IRQ")
                     dataset.update_from_yaml(

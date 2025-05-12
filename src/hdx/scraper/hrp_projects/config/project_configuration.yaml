@@ -30,3 +30,8 @@ hxl_tags:
   organizations: "#org+prog+name"
   plans: "#response+plan+name"
   Response plan code: "#response+plan+code"
+
+hrp_gho_exceptions:
+  HRP_2025:
+    add:
+      - "SYR"

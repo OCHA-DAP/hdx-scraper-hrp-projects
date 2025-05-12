@@ -65,7 +65,7 @@ def main(
                 countryiso3s = hrp_projects.get_data(
                     current_year=now.year, cutoff_year=now.year - 5
                 )
-                hrp_projects.check_hrp_gho()
+                hrp_projects.check_hrp_gho(current_year=now.year)
                 for countryiso3 in countryiso3s:
                     dataset = hrp_projects.generate_dataset(countryiso3)
                     if not dataset:
