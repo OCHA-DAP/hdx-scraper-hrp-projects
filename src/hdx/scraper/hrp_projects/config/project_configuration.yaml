@@ -34,4 +34,5 @@ hxl_tags:
 hrp_gho_exceptions:
   HRP_2025:
     add:
+      - "ETH"
       - "SYR"
