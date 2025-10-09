@@ -61,15 +61,8 @@ class TestHRPProjects:
                             },
                         ],
                         "groups": [{"name": "irq"}],
-                        "caveats": "1. Includes only projects registered as part of the Humanitarian "
-                        "Programme Cycle.\r\n2. Some projects are excluded for protection or personal-"
-                        "privacy reasons.\r\n3. For multi-country response plans, _all_ projects are "
-                        "included, and some might not apply to Iraq.",
-                        "notes": "Projects proposed, in progress, or completed as part of the annual "
-                        "Iraq Humanitarian Response Plans (HRPs) or other Humanitarian Programme Cycle "
-                        "plans. The original data is available on https://hpc.tools\r\n\r\n**Important:** "
-                        "some projects in Iraq might be missing, and others might not apply specifically "
-                        "to Iraq. See _Caveats_ under the _Additional information_ tab.",
+                        "caveats": "1. Includes only projects registered as part of the Humanitarian Programme Cycle.\r\n2. Some projects are excluded for protection or personal-privacy reasons.\r\n3. For multi-country response plans, _all_ projects are included, and some might not apply to Iraq.",
+                        "notes": "Projects proposed, in progress, or completed as part of the annual Iraq Humanitarian Response Plans (HRPs) or other Humanitarian Programme Cycle plans. The original data is available on https://hpc.tools\r\n\r\n**Important:** some projects in Iraq might be missing, and others might not apply specifically to Iraq. See _Caveats_ under the _Additional information_ tab.",
                         "license_id": "cc-by-igo",
                         "methodology": "Registry",
                         "dataset_source": "Humanitarian partners",
@@ -89,19 +82,13 @@ class TestHRPProjects:
                         "description": "Projects for Syrian Arab Republic Regional Refugee and "
                         "Resilience Plan (3RP) 2022: simplified CSV data, with HXL hashtags.",
                         "format": "csv",
-                        "resource_type": "file.upload",
-                        "url_type": "upload",
                         "dataset_preview_enabled": "True",
                     }
                     assert resources[1] == {
                         "name": "rsyr22-irq-projects.json",
-                        "description": "Projects for Syrian Arab Republic Regional Refugee and "
-                        "Resilience Plan (3RP) 2022: original JSON, from HPC.tools",
-                        "url": "https://api.hpc.tools/v2/public/project/search?planCodes=RSYR22&"
-                        "excludeFields=governingEntities,targets&limit=100000",
+                        "description": "Projects for Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2022: original JSON, from HPC.tools",
+                        "url": "https://api.hpc.tools/v2/public/project/search?planCodes=RSYR22&excludeFields=governingEntities,targets&limit=100000",
                         "format": "json",
-                        "resource_type": "api",
-                        "url_type": "api",
                         "dataset_preview_enabled": "False",
                     }
                     assert_files_same(

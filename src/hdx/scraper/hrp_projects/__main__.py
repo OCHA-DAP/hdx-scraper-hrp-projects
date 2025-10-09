@@ -40,12 +40,7 @@ def main(
         None
     """
     configuration = Configuration.read()
-    if not User.check_current_user_organization_access(
-        "ocha-hpc-tools", "create_dataset"
-    ):
-        raise PermissionError(
-            "API Token does not give access to HPC Tools organisation!"
-        )
+    User.check_current_user_write_access("ocha-hpc-tools")
     with HDXErrorHandler(should_exit_on_error=True) as error_handler:
         with temp_dir_batch(folder=_USER_AGENT_LOOKUP) as info:
             temp_dir = info["folder"]
@@ -95,6 +90,7 @@ def main(
 if __name__ == "__main__":
     facade(
         main,
+        hdx_site="stage",
         user_agent_config_yaml=join(expanduser("~"), ".useragents.yaml"),
         user_agent_lookup=_USER_AGENT_LOOKUP,
         project_config_yaml=join(
