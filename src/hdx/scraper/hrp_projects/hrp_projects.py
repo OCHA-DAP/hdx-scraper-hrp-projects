@@ -162,6 +162,11 @@ class HRPProjects:
                 edits.append(add_countries)
                 remove_countries = [c for c in old_list if c not in new_list]
                 edits.append(remove_countries)
+                self._error_handler.add_message(
+                    "HRP Projects",
+                    data_type,
+                    "Ignore error until around March then double check these changes against https://humanitarianaction.info/ and if needed update the Countries and Territories spreadsheet.",
+                )
                 if flag and len(add_countries) > 0:
                     self._error_handler.add_message(
                         "HRP Projects",
