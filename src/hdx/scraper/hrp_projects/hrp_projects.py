@@ -110,7 +110,7 @@ class HRPProjects:
                 csv_row = {
                     key: value
                     for key, value in row.items()
-                    if key in self._configuration["hxl_tags"]
+                    if key in self._configuration["headers"]
                 }
                 if row["locations"] is not None:
                     csv_row["locations"] = ", ".join(
@@ -142,6 +142,7 @@ class HRPProjects:
     def check_hrp_gho(self, current_year: int, flag=True) -> List:
         country_data = Country.countriesdata()["countries"]
         edits = []
+        header_lookup = {"GHO": "In GHO", "HRP": "Has HRP"}
         for data_type in ["GHO", "HRP"]:
             exceptions = self._configuration["hrp_gho_exceptions"].get(
                 f"{data_type}_{current_year}", {}
@@ -151,7 +152,7 @@ class HRPProjects:
             old_list = [
                 key
                 for key in country_data
-                if country_data[key][f"#indicator+bool+{data_type.lower()}"] == "Y"
+                if country_data[key][header_lookup[data_type]] == "Y"
             ]
             new_list = self.gho_countries if data_type == "GHO" else self.hrp_countries
             new_list = new_list + add_countries
@@ -204,9 +205,8 @@ class HRPProjects:
             f"Projects proposed, in progress, or completed as part of the annual {country_name} Humanitarian Response Plans (HRPs) or other Humanitarian Programme Cycle plans. The original data is available on https://hpc.tools\r\n\r\n**Important:** some projects in {country_name} might be missing, and others might not apply specifically to {country_name}. See _Caveats_ under the _Additional information_ tab."
         )
 
-        # Add two resources (HXL and JSON) for each plan specified
-        hxl_tags = self._configuration["hxl_tags"]
-        headers = list(hxl_tags.keys())
+        # Add two resources (csv and JSON) for each plan specified
+        headers = self._configuration["headers"]
         plans = self.plans_data_json[countryiso3]
         for plan in sorted(plans, key=lambda plan: plan["start"], reverse=True):
             plan_code = plan["code"]
@@ -214,15 +214,14 @@ class HRPProjects:
             data_csv = self.plans_data_csv[countryiso3][plan_code]
             resourcedata_csv = {
                 "name": f"{plan_code.lower()}-{countryiso3.lower()}-projects.csv",
-                "description": f"Projects for {plan_name}: simplified CSV data, with HXL hashtags.",
+                "description": f"Projects for {plan_name}: simplified CSV data.",
             }
-            dataset.generate_resource_from_iterable(
-                headers,
-                data_csv,
-                hxl_tags,
+            dataset.generate_resource(
                 self._temp_dir,
                 f"{plan_code.lower()}-{countryiso3.lower()}-projects.csv",
+                data_csv,
                 resourcedata_csv,
+                headers,
                 encoding="utf-8-sig",
             )
 

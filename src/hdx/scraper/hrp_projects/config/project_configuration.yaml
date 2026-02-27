@@ -14,22 +14,21 @@ hrp_subtitles:
 
 tags:
   - "humanitarian response plan-hrp"
-  - "hxl"
   - "who is doing what and where-3w-4w-5w"
 
-hxl_tags:
-  name: "#activity+name"
-  versionCode: "#activity+code+v_hpc"
-  currentRequestedFunds: "#value+requested+usd"
-  objective: "#description+objective"
-  partners: "#org+impl+name+list"
-  startDate: "#date+start"
-  endDate: "#date+end"
-  globalClusters: "#sector+cluster+global+name"
-  locations: "#country+code"
-  organizations: "#org+prog+name"
-  plans: "#response+plan+name"
-  Response plan code: "#response+plan+code"
+headers:
+  - "name"
+  - "versionCode"
+  - "currentRequestedFunds"
+  - "objective"
+  - "partners"
+  - "startDate"
+  - "endDate"
+  - "globalClusters"
+  - "locations"
+  - "organizations"
+  - "plans"
+  - "Response plan code"
 
 hrp_gho_exceptions:
   HRP_2025:
