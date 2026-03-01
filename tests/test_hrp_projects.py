@@ -37,11 +37,6 @@ class TestHRPProjects:
                     dataset.update_from_yaml(
                         path=join(config_dir, "hdx_dataset_static.yaml")
                     )
-                    dataset.generate_quickcharts(
-                        resource=0,
-                        path=join(config_dir, "hdx_resource_view_static.yaml"),
-                    )
-
                     assert dataset == {
                         "name": "hrp-projects-irq",
                         "title": "Iraq: Response Plan projects",
@@ -49,10 +44,6 @@ class TestHRPProjects:
                         "tags": [
                             {
                                 "name": "humanitarian response plan-hrp",
-                                "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
-                            },
-                            {
-                                "name": "hxl",
                                 "vocabulary_id": "b891512e-9516-4bf5-962a-7a289772a2a1",
                             },
                             {
@@ -72,7 +63,6 @@ class TestHRPProjects:
                         "owner_org": "ocha-hpc-tools",
                         "data_update_frequency": 7,
                         "subnational": "0",
-                        "dataset_preview": "resource_id",
                     }
 
                     resources = dataset.get_resources()
@@ -80,16 +70,14 @@ class TestHRPProjects:
                     assert resources[0] == {
                         "name": "rsyr22-irq-projects.csv",
                         "description": "Projects for Syrian Arab Republic Regional Refugee and "
-                        "Resilience Plan (3RP) 2022: simplified CSV data, with HXL hashtags.",
+                        "Resilience Plan (3RP) 2022: simplified CSV data.",
                         "format": "csv",
-                        "dataset_preview_enabled": "True",
                     }
                     assert resources[1] == {
                         "name": "rsyr22-irq-projects.json",
                         "description": "Projects for Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2022: original JSON, from HPC.tools",
                         "url": "https://api.hpc.tools/v2/public/project/search?planCodes=RSYR22&excludeFields=governingEntities,targets&limit=100000",
                         "format": "json",
-                        "dataset_preview_enabled": "False",
                     }
                     assert_files_same(
                         join(fixtures_dir, "rsyr22-irq-projects.csv"),

@@ -70,18 +70,9 @@ def main(
                             dirname(__file__), "config", "hdx_dataset_static.yaml"
                         )
                     )
-                    dataset.generate_quickcharts(
-                        resource=0,
-                        path=join(
-                            dirname(__file__),
-                            "config",
-                            "hdx_resource_view_static.yaml",
-                        ),
-                    )
                     dataset.create_in_hdx(
                         remove_additional_resources=True,
                         match_resource_order=False,
-                        hxl_update=False,
                         updated_by_script=_UPDATED_BY_SCRIPT,
                         batch=info["batch"],
                     )
