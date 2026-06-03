@@ -35,6 +35,6 @@ hrp_gho_exceptions:
     add:
       - "ETH"
       - "SYR"
-  HRP_20206:
+  HRP_2026:
     add:
       - "SYR"
