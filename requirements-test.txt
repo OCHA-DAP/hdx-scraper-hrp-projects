@@ -229,7 +229,7 @@ ruamel-yaml==0.19.1
     # via
     #   -c requirements.txt
     #   hdx-python-utilities
-setuptools==82.0.1
+setuptools==83.0.0
     # via
     #   -c requirements.txt
     #   ckanapi
